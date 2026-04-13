@@ -103,6 +103,97 @@
             font-size: 24px;
             margin-bottom: 30px;
         }
+
+        .virtual-controls {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .virtual-controls {
+                display: block;
+            }
+            
+            .controls {
+                display: none;
+            }
+            
+            .game-container {
+                padding: 15px;
+            }
+            
+            canvas {
+                max-width: 100%;
+                height: auto;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+
+        .d-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            grid-template-rows: repeat(3, 60px);
+            gap: 5px;
+            justify-content: center;
+            margin: 0 auto;
+        }
+
+        .d-btn {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        .d-btn:active {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: scale(0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .d-btn.up {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .d-btn.left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .d-btn.right {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        .d-btn.down {
+            grid-column: 2;
+            grid-row: 3;
+        }
+
+        .pause-btn {
+            grid-column: 2;
+            grid-row: 2;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
@@ -117,6 +208,17 @@
             <p>使用方向键 ↑ ↓ ← → 控制蛇的移动</p>
             <p>按空格键暂停/继续游戏</p>
         </div>
+        
+        <div class="virtual-controls">
+            <div class="d-pad">
+                <button class="d-btn up" ontouchstart="handleVirtualControl('up')" onclick="handleVirtualControl('up')">↑</button>
+                <button class="d-btn left" ontouchstart="handleVirtualControl('left')" onclick="handleVirtualControl('left')">←</button>
+                <button class="d-btn pause-btn" ontouchstart="togglePause()" onclick="togglePause()">⏸</button>
+                <button class="d-btn right" ontouchstart="handleVirtualControl('right')" onclick="handleVirtualControl('right')">→</button>
+                <button class="d-btn down" ontouchstart="handleVirtualControl('down')" onclick="handleVirtualControl('down')">↓</button>
+            </div>
+        </div>
+        
         <button class="btn" onclick="startGame()">开始游戏</button>
     </div>
 
@@ -380,6 +482,39 @@
                     break;
             }
         });
+
+        function handleVirtualControl(control) {
+            if (!isGameRunning || isPaused) return;
+
+            switch (control) {
+                case 'up':
+                    if (direction.y !== 1) {
+                        nextDirection = { x: 0, y: -1 };
+                    }
+                    break;
+                case 'down':
+                    if (direction.y !== -1) {
+                        nextDirection = { x: 0, y: 1 };
+                    }
+                    break;
+                case 'left':
+                    if (direction.x !== 1) {
+                        nextDirection = { x: -1, y: 0 };
+                    }
+                    break;
+                case 'right':
+                    if (direction.x !== -1) {
+                        nextDirection = { x: 1, y: 0 };
+                    }
+                    break;
+            }
+        }
+
+        function togglePause() {
+            if (isGameRunning) {
+                isPaused = !isPaused;
+            }
+        }
 
         draw();
     </script>
