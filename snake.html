@@ -193,6 +193,8 @@
             grid-row: 2;
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             font-size: 18px;
+            z-index: 10;
+            position: relative;
         }
     </style>
 </head>
@@ -213,7 +215,7 @@
             <div class="d-pad">
                 <button class="d-btn up" ontouchstart="handleVirtualControl('up')" onclick="handleVirtualControl('up')">↑</button>
                 <button class="d-btn left" ontouchstart="handleVirtualControl('left')" onclick="handleVirtualControl('left')">←</button>
-                <button class="d-btn pause-btn" ontouchstart="togglePause()" onclick="togglePause()">⏸</button>
+                <button class="d-btn pause-btn" ontouchstart="event.preventDefault(); event.stopPropagation(); togglePause()" onclick="togglePause()">⏸</button>
                 <button class="d-btn right" ontouchstart="handleVirtualControl('right')" onclick="handleVirtualControl('right')">→</button>
                 <button class="d-btn down" ontouchstart="handleVirtualControl('down')" onclick="handleVirtualControl('down')">↓</button>
             </div>
@@ -556,6 +558,7 @@
             isPaused = !isPaused;
             
             if (isPaused) {
+                clearInterval(gameLoop);
                 ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = 'white';
@@ -566,6 +569,7 @@
                 ctx.font = '16px Arial';
                 ctx.fillText('点击暂停按钮继续', canvas.width / 2, canvas.height / 2 + 40);
             } else {
+                gameLoop = setInterval(gameStep, gameSpeed);
                 draw();
             }
         }
