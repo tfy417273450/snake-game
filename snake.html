@@ -246,7 +246,8 @@
         let score = 0;
         let highScore = localStorage.getItem('snakeHighScore') || 0;
         let gameLoop;
-        let gameSpeed = 100;
+        let gameSpeed = 150;
+        let currentSpeedLevel = 1;
         let isPaused = false;
         let isGameRunning = false;
 
@@ -275,6 +276,48 @@
                     y: Math.floor(Math.random() * tileCount)
                 };
             } while (snake.some(segment => segment.x === food.x && segment.y === food.y));
+        }
+
+        function updateGameSpeed() {
+            let newSpeedLevel = 1;
+            let newGameSpeed = 150;
+
+            if (score >= 100) {
+                newSpeedLevel = 3;
+                newGameSpeed = 80;
+            } else if (score >= 50) {
+                newSpeedLevel = 2;
+                newGameSpeed = 110;
+            }
+
+            if (newSpeedLevel !== currentSpeedLevel) {
+                currentSpeedLevel = newSpeedLevel;
+                gameSpeed = newGameSpeed;
+                clearInterval(gameLoop);
+                gameLoop = setInterval(gameStep, gameSpeed);
+                
+                showSpeedNotification();
+            }
+        }
+
+        function showSpeedNotification() {
+            const speedMessages = {
+                1: '速度等级: 1 (慢速)',
+                2: '速度等级: 2 (中速)',
+                3: '速度等级: 3 (快速)'
+            };
+            
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#ffd700';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(speedMessages[currentSpeedLevel], canvas.width / 2, canvas.height / 2);
+            
+            setTimeout(() => {
+                draw();
+            }, 1000);
         }
 
         function draw() {
@@ -403,11 +446,7 @@
                 scoreElement.textContent = score;
                 spawnFood();
                 
-                if (score % 50 === 0 && gameSpeed > 50) {
-                    gameSpeed -= 5;
-                    clearInterval(gameLoop);
-                    gameLoop = setInterval(gameStep, gameSpeed);
-                }
+                updateGameSpeed();
             } else {
                 snake.pop();
             }
@@ -440,7 +479,8 @@
 
         function restartGame() {
             gameOverElement.style.display = 'none';
-            gameSpeed = 100;
+            gameSpeed = 150;
+            currentSpeedLevel = 1;
             startGame();
         }
 
